@@ -205,7 +205,6 @@ namespace launcher
         async void Initialize(string[] args)
         {
             updateFiles.Clear();
-            string result = null;
             byte[] changelog = null;
 
             bool forceInstall = false;
@@ -293,10 +292,10 @@ namespace launcher
         {
             try
             {
-                string response = await util.GET(ToEndpoint(master) + "/mirror?xml&latest");
+                string response = await util.GET(ToEndpoint(master) + "/api/mirror?xml&latest=1");
                 return DeserializeXml<MirrorResponse>(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -802,7 +801,7 @@ namespace launcher
                     nickname = parts[0];
                 }
             }
-            string response = await util.GET(ToEndpoint(master) + "/api/login?export=xml&hash=1&a=" + System.Web.HttpUtility.UrlEncode(nickname) + "&b=" + System.Web.HttpUtility.UrlEncode(loginPassword.Password));
+            string response = await util.GET(ToEndpoint(master) + "/api/login?xml&hash=1&a=" + System.Web.HttpUtility.UrlEncode(nickname) + "&b=" + System.Web.HttpUtility.UrlEncode(loginPassword.Password));
             try
             {
                 var login = DeserializeXml<AuthResponse>(response);
