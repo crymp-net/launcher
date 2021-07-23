@@ -95,6 +95,7 @@ namespace launcher
         bool installed = true;
         bool validInstallPath = false;
         string installPath = ".\\";
+        string knownMaster = null;
         bool isWow64 = false;
         DispatcherTimer globalTimer = new DispatcherTimer();
 
@@ -226,14 +227,21 @@ namespace launcher
                 }
             }
 
+            string master = await GetMaster();
+
+            if(master == null)
+            {
+                MessageBox.Show("Couldn't find any suitable master server, please consider contacting community", "Internet error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Close();
+                return;
+            }
+
             try
             {
-                var t_result = util.GET("https://crymp.net/mirror.php?latest&xml");
-                var t_changelog = util.RawGET("https://crymp.net/client/changelog.rtf");
+                var t_changelog = util.RawGET("https://"+ master + "/client/changelog.rtf");
                 var t_loggedIn = FetchProfile();
                 var t_onlineStatus = UpdateOnlineMessage();
-                await Task.WhenAll(new Task[] { t_result, t_changelog, t_loggedIn, t_onlineStatus });
-                result = t_result.Result;
+                await Task.WhenAll(new Task[] { t_changelog, t_loggedIn, t_onlineStatus });
                 changelog = t_changelog.Result;
             }
 
@@ -241,11 +249,11 @@ namespace launcher
             {
                 MessageBox.Show("Couldn't fetch latest information from server, please try again later", "Internet error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Close();
+                return;
             }
 
             changeLog.Selection.Load(new MemoryStream(changelog), DataFormats.Rtf);
-            updateFiles = DeserializeXml<MirrorResponse>(result).files.ToList();
-
+            
             needsUpdate = CheckFiles(".\\");
             installed = File.Exists(updateFiles[0].path);
             if (installed)
@@ -279,6 +287,77 @@ namespace launcher
             {
                 OnMainButton();
             }
+        }
+
+        async Task<MirrorResponse> NoThrowGetFileList(string master)
+        {
+            try
+            {
+                string response = await util.GET(ToEndpoint(master) + "/mirror?xml&latest");
+                return DeserializeXml<MirrorResponse>(response);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        async Task<string> GetMaster(List<string> candidates)
+        {
+            List<Task<MirrorResponse>> responses = new List<Task<MirrorResponse>>();
+            foreach(string candidate in candidates)
+            {
+                responses.Add(NoThrowGetFileList(candidate));
+            }
+            await Task.WhenAll(responses.ToArray());
+            int i = 0;
+            foreach(var task in responses)
+            {
+                if(task.Result != null)
+                {
+                    updateFiles = task.Result.files.ToList();
+                    return candidates[i];
+                }
+                i++;
+            }
+            return null;
+        }
+
+        async Task<string> GetMaster()
+        {
+            //if (knownMaster != null) return knownMaster;
+            List<string> candidates = new List<string>();
+            candidates.Add("crymp.net");
+            if (File.Exists("masters.txt"))
+            {
+                candidates = File.ReadAllLines("masters.txt")
+                    .Select(x => x.Trim())
+                    .Where(x => x.Length > 0)
+                    .ToList();
+            } else {
+                try
+                {
+                    string fallback = await util.GET("https://raw.githubusercontent.com/ccomrade/crymp-client/master/masters.txt");
+                    candidates = fallback.Split('\n')
+                        .Select(x => x.Trim())
+                        .Where(x => x.Length > 0)
+                        .ToList();
+                }
+                catch (Exception)
+                {
+                }
+            }
+            string master = await GetMaster(candidates);
+            if(master != null)
+            {
+                knownMaster = master;
+            }
+            return master;
+        }
+
+        string ToEndpoint(string master)
+        {
+            return "https://" + master;
         }
 
         async void OnMainButton()
@@ -334,7 +413,7 @@ namespace launcher
         {
             try
             {
-                var online = await util.GET("https://crymp.net/api/online?xml");
+                var online = await util.GET(ToEndpoint(knownMaster) + "/api/online?xml");
                 onlineStatus = DeserializeXml<OnlineStatus>(online);
                 var n = onlineStatus.online;
                 if (n == 0) activeStatus.Content = "No players active right now";
@@ -458,7 +537,7 @@ namespace launcher
                         nickname = parts[0];
                     }
                 }
-                string info = await util.GET("https://" + master + "/api/profile?xml&a=" + HttpUtility.UrlEncode(nickname) + "&b=" + HttpUtility.UrlEncode(settings.token));
+                string info = await util.GET(ToEndpoint(master) + "/api/profile?xml&a=" + HttpUtility.UrlEncode(nickname) + "&b=" + HttpUtility.UrlEncode(settings.token));
                 if(info == "FAIL")
                 {
                     loginScreen.Visibility = Visibility.Visible;
@@ -723,7 +802,7 @@ namespace launcher
                     nickname = parts[0];
                 }
             }
-            string response = await util.GET("https://" + master + "/api/login?export=xml&hash=1&a=" + System.Web.HttpUtility.UrlEncode(nickname) + "&b=" + System.Web.HttpUtility.UrlEncode(loginPassword.Password));
+            string response = await util.GET(ToEndpoint(master) + "/api/login?export=xml&hash=1&a=" + System.Web.HttpUtility.UrlEncode(nickname) + "&b=" + System.Web.HttpUtility.UrlEncode(loginPassword.Password));
             try
             {
                 var login = DeserializeXml<AuthResponse>(response);

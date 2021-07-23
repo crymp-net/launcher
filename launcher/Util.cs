@@ -165,6 +165,9 @@ namespace launcher
             TaskCompletionSource<byte[]> promise = new TaskCompletionSource<byte[]>();
             WebClient wc = new WebClient();
             wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             wc.DownloadDataCompleted += (object sender, DownloadDataCompletedEventArgs e) =>
             {
                 if (e.Error != null)
