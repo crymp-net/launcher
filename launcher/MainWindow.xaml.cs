@@ -238,7 +238,7 @@ namespace launcher
 
             try
             {
-                var t_changelog = util.RawGET("https://"+ master + "/client/changelog.rtf");
+                var t_changelog = util.RawGET(ToEndpoint(master) + "/client/changelog.rtf");
                 var t_loggedIn = FetchProfile();
                 var t_onlineStatus = UpdateOnlineMessage();
                 await Task.WhenAll(new Task[] { t_changelog, t_loggedIn, t_onlineStatus });
