@@ -58,7 +58,7 @@
                             <RowDefinition></RowDefinition>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="E-mail or nickname:" Padding="4" Grid.Row="0" FontWeight="SemiBold" Foreground="White"></TextBlock>
+                        <TextBlock Text="Nickname or full account handle:" Padding="4" Grid.Row="0" FontWeight="SemiBold" Foreground="White"></TextBlock>
                         <TextBox x:Name="loginEmail" TabIndex="0" Grid.Row="1" Padding="4" Height="30" Margin="0,4,0,4" VerticalContentAlignment="Center"></TextBox>
                         <TextBlock Text="Password:" Grid.Row="2" Padding="4" FontWeight="SemiBold" Foreground="White"></TextBlock>
                         <PasswordBox x:Name="loginPassword" Grid.Row="3" TabIndex="1" Padding="4" Height="30" Margin="0,4,0,4" VerticalContentAlignment="Center"></PasswordBox>

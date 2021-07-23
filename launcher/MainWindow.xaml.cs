@@ -324,7 +324,7 @@ namespace launcher
 
         async Task<string> GetMaster()
         {
-            //if (knownMaster != null) return knownMaster;
+            if (knownMaster != null) return knownMaster;
             List<string> candidates = new List<string>();
             candidates.Add("crymp.net");
             if (File.Exists("masters.txt"))
