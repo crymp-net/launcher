@@ -155,6 +155,7 @@ namespace launcher
                 @"D:\SteamLibrary\steamapps\common\Crysis",
                 @"D:\Electronic Arts\Crytek\Crysis",
                 @"D:\Games\Electronic Arts\Crytek\Crysis",
+                @"C:\Games\Crysis",
                 @"D:\Games\Crysis",
                 @"E:\Games\Crysis",
             };
