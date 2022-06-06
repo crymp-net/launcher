@@ -133,20 +133,14 @@ namespace launcher
 
             architecture.SelectionChanged += (s, e) =>
             {
-                if (e.AddedItems.Count >= 1)
-                {
-                    settings.architecture = (e.AddedItems[0] as Option).Value;
-                    SaveSettings();
-                }
+                settings.architecture = archOptions[architecture.SelectedIndex].Value;
+                SaveSettings();
             };
 
             renderer.SelectionChanged += (s, e) =>
             {
-                if (e.AddedItems.Count >= 1)
-                {
-                    settings.renderer = (e.AddedItems[0] as Option).Value;
-                    SaveSettings();
-                }
+                settings.renderer = rendererOptions[renderer.SelectedIndex].Value;
+                SaveSettings();
             };
 
             string[] possibleFolders =
