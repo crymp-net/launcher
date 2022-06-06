@@ -528,13 +528,13 @@ namespace launcher
             {
                 string master = "crymp.net";
                 string nickname = settings.handle;
-                if(nickname.IndexOf("@") != -1)
+                if(nickname.IndexOf(":") != -1)
                 {
-                    string[] parts = nickname.Split('@');
+                    string[] parts = nickname.Split(':');
                     if (parts.Length == 2 && parts[0].Length > 0 && parts[1].Length > 1)
                     {
-                        master = parts[1];
-                        nickname = parts[0];
+                        master = parts[0];
+                        nickname = parts[1];
                     }
                 }
                 string info = await util.GET(ToEndpoint(master) + "/api/profile?xml&a=" + HttpUtility.UrlEncode(nickname) + "&b=" + HttpUtility.UrlEncode(settings.token));
@@ -708,7 +708,18 @@ namespace launcher
             string args = settings.renderer == "dx9" ? "-dx9" : "-dx10";
             if(settings.handle != null && settings.token != null)
             {
-                args += " +secu_login " + settings.handle + " " + settings.token;
+                String handle = settings.handle;
+                if(handle.IndexOf(":") != -1)
+                {
+                    String[] parts = handle.Split(':');
+                    if(parts.Length == 2)
+                    {
+                        handle = parts[1];
+                        if(parts[0] != "crymp.net")
+                            handle += "@" + parts[0];
+                    }
+                }
+                args += " +secu_login " + handle + " " + settings.token;
             }
 
             startInfo.Arguments = args;
@@ -796,21 +807,21 @@ namespace launcher
         {
             string master = "crymp.net";
             string nickname = loginEmail.Text;
-            if(loginEmail.Text.IndexOf("@") != -1)
+            if(loginEmail.Text.IndexOf(":") != -1)
             {
-                string[] parts = loginEmail.Text.Split('@');
+                string[] parts = loginEmail.Text.Split(':');
                 if(parts.Length == 2 && parts[0].Length > 0 && parts[1].Length > 1)
                 {
-                    master = parts[1];
-                    nickname = parts[0];
+                    master = parts[0];
+                    nickname = parts[1];
                 }
             }
             string response = await util.GET(ToEndpoint(master) + "/api/login?xml&hash=1&a=" + System.Web.HttpUtility.UrlEncode(nickname) + "&b=" + System.Web.HttpUtility.UrlEncode(loginPassword.Password));
             try
             {
                 var login = DeserializeXml<AuthResponse>(response);
-                settings.handle = nickname;
-                if (master != "crymp.net") settings.handle += "@" + master;
+                settings.handle = login.nickname;
+                if (master != "crymp.net") settings.handle = master + ":" + settings.handle;
                 settings.token = login.token;
                 SaveSettings();
                 return settings.handle != null;
