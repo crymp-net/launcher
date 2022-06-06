@@ -493,7 +493,7 @@ namespace launcher
         }
         void OnViewChangelog(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/ccomrade/crymp-client/blob/master/CHANGELOG.md");
+            Process.Start("https://github.com/ccomrade/crymp-client/releases");
         }
 
         async void OnLoginButton(object snder, RoutedEventArgs e)
