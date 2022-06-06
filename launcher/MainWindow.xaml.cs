@@ -133,14 +133,20 @@ namespace launcher
 
             architecture.SelectionChanged += (s, e) =>
             {
-                settings.architecture = (e.AddedItems[0] as Option).Value;
-                SaveSettings();
+                if (e.AddedItems.Count >= 1)
+                {
+                    settings.architecture = (e.AddedItems[0] as Option).Value;
+                    SaveSettings();
+                }
             };
 
             renderer.SelectionChanged += (s, e) =>
             {
-                settings.renderer = (e.AddedItems[0] as Option).Value;
-                SaveSettings();
+                if (e.AddedItems.Count >= 1)
+                {
+                    settings.renderer = (e.AddedItems[0] as Option).Value;
+                    SaveSettings();
+                }
             };
 
             string[] possibleFolders =
@@ -206,7 +212,6 @@ namespace launcher
         async void Initialize(string[] args)
         {
             updateFiles.Clear();
-            byte[] changelog = null;
 
             bool forceInstall = false;
 
@@ -238,11 +243,9 @@ namespace launcher
 
             try
             {
-                var t_changelog = util.RawGET(ToEndpoint(master) + "/client/changelog.rtf");
                 var t_loggedIn = FetchProfile();
                 var t_onlineStatus = UpdateOnlineMessage();
-                await Task.WhenAll(new Task[] { t_changelog, t_loggedIn, t_onlineStatus });
-                changelog = t_changelog.Result;
+                await Task.WhenAll(new Task[] { t_loggedIn, t_onlineStatus });
             }
 
             catch (Exception)
@@ -252,7 +255,6 @@ namespace launcher
                 return;
             }
 
-            changeLog.Selection.Load(new MemoryStream(changelog), DataFormats.Rtf);
             
             needsUpdate = CheckFiles(".\\");
             installed = File.Exists(updateFiles[0].path);
@@ -489,6 +491,10 @@ namespace launcher
         {
             PromptFolder();
         }
+        void OnViewChangelog(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/ccomrade/crymp-client/blob/master/CHANGELOG.md");
+        }
 
         async void OnLoginButton(object snder, RoutedEventArgs e)
         {
@@ -582,16 +588,17 @@ namespace launcher
                 rightPanelInstall.Visibility = Visibility.Visible;
                 rightPanelPlay.Visibility = Visibility.Hidden;
                 mainButton.Content = installed ? "Update" : "Install";
-                mainButton.IsEnabled = validInstallPath;
+                mainButton.IsEnabled = installed || validInstallPath;
                 if (installed)
                 {
                     instProgress.Visibility = Visibility.Visible;
                     createShortcutCheckbox.Visibility = Visibility.Hidden;
                     instPath.Visibility = Visibility.Hidden;
+                    instHelper3.Content = "Your client is out of date, an update is required";
                     instHelper1.Visibility = Visibility.Hidden;
                     instHelper2.Visibility = Visibility.Hidden;
+                    instHelper4.Visibility = Visibility.Visible;
                     instHelper3.Visibility = Visibility.Visible;
-                    instHelper3.Content = "Your client is out of date, an update is required";
                 } else
                 {
                     createShortcutCheckbox.Visibility = Visibility.Visible;
@@ -601,6 +608,8 @@ namespace launcher
                     instHelper1.Visibility = Visibility.Visible;
                     instHelper2.Visibility = Visibility.Visible;
                     instHelper3.Visibility = Visibility.Hidden;
+                    instHelper4.Visibility = Visibility.Hidden;
+                    instHelper2.Content = "Locate the game";
                 }
             }
             else

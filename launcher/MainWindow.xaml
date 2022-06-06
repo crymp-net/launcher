@@ -6,19 +6,22 @@
         xmlns:local="clr-namespace:launcher"
         mc:Ignorable="d"
         WindowStyle="None"
-        Title="MainWindow" Height="720" Width="1280"
+        Title="MainWindow" Height="500" Width="720"
         Left="50"
         Top="50"
         ResizeMode="NoResize" MouseDown="OnWindowMouseDown">
-    <Grid Background="#FF202020">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF202024" Offset="0"/>
+                <GradientStop Color="#FF101010" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
         <Grid x:Name="loadingGrid" Visibility="Hidden">
-            <Image Source="Assets/bg_loading.jpg" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"></Image>
             <TextBlock Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24px">Initializing, please wait</TextBlock>
         </Grid>
         <Grid x:Name="loadedGrid" Visibility="Visible">
-            <Image Source="Assets/bg.jpg" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"></Image>
-            <Image HorizontalAlignment="Left" Height="60" Margin="20,20,0,0" VerticalAlignment="Top" Width="60" Source="Assets/logo_192.png"/>
-            <Label Content="CryMP Launcher" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" FontSize="24px" Foreground="White" Height="60" Margin="80,20,0,0"/>
+            <Label Content="CryMP.net Launcher" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" FontSize="24px" Foreground="White" Height="60" Margin="20,20,0,0"/>
             <Label x:Name="activeStatus" Content="No players active" HorizontalAlignment="Right" VerticalAlignment="Top" Foreground="White" Margin="0,58,10,0" FontSize="16px" Height="32" VerticalContentAlignment="Center" FontWeight="SemiBold"></Label>
             <!-- installer -->
             <Button HorizontalAlignment="Left" TabIndex="-1" IsEnabled="False" VerticalAlignment="Bottom" Margin="20,0,0,20" Style="{StaticResource ActionButton}" x:Name="mainButton" Content="Checking for updates" Width="180" Height="60"></Button>
@@ -31,6 +34,9 @@
                 <Label x:Name="instHelper2" HorizontalAlignment="Left" VerticalContentAlignment="Center" Foreground="Orange" FontWeight="Bold" Height="30" Margin="135,0,0,20" VerticalAlignment="Bottom" Width="105">
                     <TextBlock TextDecorations="Underline" PreviewMouseDown="OnPromptFolder" Cursor="Hand">Locate the game</TextBlock>
                 </Label>
+                <Label x:Name="instHelper4" HorizontalAlignment="Left" Visibility="Hidden" VerticalContentAlignment="Center" Foreground="Orange" FontWeight="Bold" Height="30" Margin="20,0,0,3" VerticalAlignment="Bottom" Width="105">
+                    <TextBlock TextDecorations="Underline" PreviewMouseDown="OnViewChangelog" Cursor="Hand">View changelog</TextBlock>
+                </Label>
                 <CheckBox x:Name="createShortcutCheckbox" IsChecked="True" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="260,0,0,20" Height="30" VerticalContentAlignment="Center" Foreground="White">Create shorcut on desktop</CheckBox>
             </Grid>
             <!-- right side play -->
@@ -42,12 +48,7 @@
             </Grid>
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,100,0,100" x:Name="mainContent">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition>
-
-                    </ColumnDefinition>
-                    <ColumnDefinition>
-
-                    </ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid x:Name="loginScreen" Visibility="Hidden" Grid.Column="0">
                     <Grid Width="400" VerticalAlignment="Center">
@@ -77,7 +78,7 @@
                         <ColumnDefinition Width="108px"></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label x:Name="accountName" Foreground="White" FontSize="52px" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="100" HorizontalAlignment="Stretch" Margin="20,10,20,0" Content="User account"></Label>
+                    <Label x:Name="accountName" Foreground="White" FontSize="32px" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" Margin="20,10,20,0" Content="User account"></Label>
                     <Label Foreground="White" FontSize="18px" Grid.Column="0" Margin="20,0,20,0" Grid.Row="1" VerticalAlignment="Top" VerticalContentAlignment="Center"  HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Content="Kills:"></Label>
                     <Label Foreground="White" FontSize="18px" Grid.Column="0" Margin="20,0,20,0" Grid.Row="2" VerticalAlignment="Top" VerticalContentAlignment="Center"  HorizontalAlignment="Stretch"  HorizontalContentAlignment="Left" Content="Deaths:"></Label>
                     <Label Foreground="White" FontSize="18px" Grid.Column="0" Margin="20,0,20,0" Grid.Row="3" VerticalAlignment="Top" VerticalContentAlignment="Center"  HorizontalAlignment="Stretch"  HorizontalContentAlignment="Left" Content="Time:"></Label>
@@ -87,9 +88,6 @@
                     <Label Foreground="White" FontSize="14px" Grid.Column="0" Margin="20,0,20,0" Grid.ColumnSpan="2" Grid.Row="4" VerticalAlignment="Top" VerticalContentAlignment="Center"  HorizontalAlignment="Stretch"  HorizontalContentAlignment="Left">
                         <TextBlock TextDecorations="Underline" Cursor="Hand" FontSize="14px" PreviewMouseLeftButtonDown="OnLogoutButton" Foreground="Orange" FontWeight="SemiBold">Log-out</TextBlock>
                     </Label>
-                </Grid>
-                <Grid Grid.Column="1">
-                    <RichTextBox TabIndex="-1" x:Name="changeLog" VerticalScrollBarVisibility="Auto" IsReadOnly="True" BorderThickness="0" Padding="0,10,0,10" Foreground="White" Background="Transparent" VerticalAlignment="Stretch" Margin="10,0,0,0"></RichTextBox>
                 </Grid>
             </Grid>
         </Grid>

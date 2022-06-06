@@ -5,9 +5,9 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <Style TargetType="ProgressBar">
-            <Setter Property="Background" Value="#242434"/>
+            <Setter Property="Background" Value="#242424"/>
             <Setter Property="Foreground" Value="#FFAA10"/>
-            <Setter Property="BorderBrush" Value="#343444"/>
+            <Setter Property="BorderBrush" Value="#343434"/>
         </Style>
 
         <Style x:Key="CloseButton" TargetType="{x:Type Button}">
@@ -31,29 +31,29 @@
         </Style>
 
         <Style TargetType="{x:Type TextBox}">
-            <Setter Property="Background" Value="#242434" />
+            <Setter Property="Background" Value="#242424" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderBrush" Value="#343444"/>
+            <Setter Property="BorderBrush" Value="#343434"/>
         </Style>
         <Style TargetType="{x:Type PasswordBox}">
-            <Setter Property="Background" Value="#242434" />
+            <Setter Property="Background" Value="#242424" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderBrush" Value="#343444"/>
+            <Setter Property="BorderBrush" Value="#343434"/>
         </Style>
         <Style x:Key="ActionButton" TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="#242434" />
+            <Setter Property="Background" Value="#242424" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="15,15,15,15" />
-            <Setter Property="BorderBrush" Value="#343444"/>
+            <Setter Property="BorderBrush" Value="#343434"/>
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -64,15 +64,15 @@
 
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#141424" />
+                                <Setter Property="Background" Value="#141414" />
                                 <Setter Property="Foreground" Value="White" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#202030" />
+                                <Setter Property="Background" Value="#202020" />
                                 <Setter Property="Foreground" Value="White" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#242434" />
+                                <Setter Property="Background" Value="#242424" />
                                 <Setter Property="Foreground" Value="#808080" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -88,7 +88,7 @@
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="15,15,15,15" />
-            <Setter Property="BorderBrush" Value="#343444"/>
+            <Setter Property="BorderBrush" Value="#343434"/>
 
             <Setter Property="Template">
                 <Setter.Value>
