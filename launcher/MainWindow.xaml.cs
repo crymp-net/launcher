@@ -128,8 +128,28 @@ namespace launcher
             renderer.DisplayMemberPath = "Name";
             renderer.SelectedValuePath = "Value";
 
-            architecture.SelectedValue = settings.architecture;
-            renderer.SelectedValue = settings.renderer;
+            bool selectedArch = false, selectedRenderer = false;
+            foreach (Option option in archOptions)
+            {
+                if (option.Value == settings.architecture)
+                {
+                    architecture.SelectedValue = settings.architecture;
+                    selectedArch = true;
+                    break;
+                }
+            }
+            foreach (Option option in rendererOptions)
+            {
+                if (option.Value == settings.renderer)
+                {
+                    renderer.SelectedValue = settings.renderer;
+                    selectedRenderer = true;
+                    break;
+                }
+            }
+
+            if (!selectedArch) architecture.SelectedValue = archOptions.Last().Value;
+            if (!selectedRenderer) renderer.SelectedValue = rendererOptions.Last().Value;
 
             architecture.SelectionChanged += (s, e) =>
             {
@@ -614,15 +634,11 @@ namespace launcher
                 if (canPlay32 && !canPlay64)
                 {
                     settings.architecture = "32";
-                } else if(canPlay64 && !canPlay32)
-                {
+                } else if(canPlay64 && !canPlay32) {
                     settings.architecture = "64";
                 }
 
-
                 string target = settings.architecture;
-                if (!canPlay64) archOptions.Remove(archOptions[1]);
-                if (!canPlay32) archOptions.Remove(archOptions[0]);
 
                 architecture.SelectedValue = target;
                 SaveSettings();
