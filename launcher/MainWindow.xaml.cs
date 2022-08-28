@@ -546,7 +546,7 @@ namespace launcher
             }
             try
             {
-                string master = "crymp.net";
+                string master = await GetMaster();
                 string nickname = settings.handle;
                 if(nickname.IndexOf(":") != -1)
                 {
@@ -731,7 +731,7 @@ namespace launcher
                     if(parts.Length == 2)
                     {
                         handle = parts[1];
-                        if(parts[0] != "crymp.net")
+                        if(!IsOfficialMaster(parts[0]))
                             handle += "@" + parts[0];
                     }
                 }
@@ -819,9 +819,14 @@ namespace launcher
             }
         }
 
+        public bool IsOfficialMaster(string master)
+        {
+            return master == "crymp.net" || master == "crymp.nullptr.one";
+        }
+
         async Task<bool> Login()
         {
-            string master = "crymp.net";
+            string master = await GetMaster();
             string nickname = loginEmail.Text;
             if(loginEmail.Text.IndexOf(":") != -1)
             {
@@ -837,7 +842,7 @@ namespace launcher
             {
                 var login = DeserializeXml<AuthResponse>(response);
                 settings.handle = login.nickname;
-                if (master != "crymp.net") settings.handle = master + ":" + settings.handle;
+                if (!IsOfficialMaster(master)) settings.handle = master + ":" + settings.handle;
                 settings.token = login.token;
                 SaveSettings();
                 return settings.handle != null;
