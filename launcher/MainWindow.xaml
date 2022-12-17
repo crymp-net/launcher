@@ -24,6 +24,8 @@
             <Label Content="CryMP.net Launcher" HorizontalAlignment="Left" VerticalAlignment="Top" VerticalContentAlignment="Center" FontSize="24px" Foreground="White" Height="60" Margin="20,20,0,0"/>
             <Label x:Name="activeStatus" Content="No players active" HorizontalAlignment="Right" VerticalAlignment="Top" Foreground="White" Margin="0,58,10,0" FontSize="16px" Height="32" VerticalContentAlignment="Center" FontWeight="SemiBold"></Label>
             <!-- installer -->
+            <ComboBox x:Name="installContext" Width="180" Height="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20,0,0,85"/>
+
             <Button HorizontalAlignment="Left" TabIndex="-1" IsEnabled="False" VerticalAlignment="Bottom" Margin="20,0,0,20" Style="{StaticResource ActionButton}" x:Name="mainButton" Content="Checking for updates" Width="180" Height="60"></Button>
             <!-- right side -->
             <Grid x:Name="rightPanelInstall" Visibility="Visible" Height="100" VerticalAlignment="Bottom" Margin="200,0,0,0" HorizontalAlignment="Stretch">

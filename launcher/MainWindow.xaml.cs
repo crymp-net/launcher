@@ -53,6 +53,7 @@ namespace launcher
             public string token = null;
             public string renderer = "dx10";
             public string architecture = "64";
+            public string context = "release";
         }
 
         public class AccountInfo
@@ -72,7 +73,7 @@ namespace launcher
             public int online = 0;
         }
 
-        public T DeserializeXml<T>(byte[] data) where T: class
+        public T DeserializeXml<T>(byte[] data) where T : class
         {
             XmlSerializer ser = new XmlSerializer(typeof(T));
             using (MemoryStream fs = new MemoryStream(data))
@@ -101,6 +102,12 @@ namespace launcher
 
         Settings settings = new Settings();
 
+        List<Option> contextOptions = new List<Option>
+        {
+            new Option{ Name = "Official", Value = "release"},
+            new Option{ Name = "Development", Value = "dev" }
+        };
+
         List<Option> archOptions = new List<Option>
         {
                 new Option{ Name = "32-bit", Value = "32" },
@@ -127,8 +134,11 @@ namespace launcher
             renderer.ItemsSource = rendererOptions;
             renderer.DisplayMemberPath = "Name";
             renderer.SelectedValuePath = "Value";
+            installContext.ItemsSource = contextOptions;
+            installContext.DisplayMemberPath = "Name";
+            installContext.SelectedValuePath = "Value";
 
-            bool selectedArch = false, selectedRenderer = false;
+            bool selectedArch = false, selectedRenderer = false, selectedContext = false;
             foreach (Option option in archOptions)
             {
                 if (option.Value == settings.architecture)
@@ -147,9 +157,19 @@ namespace launcher
                     break;
                 }
             }
+            foreach (Option option in contextOptions)
+            {
+                if (settings.context != null && option.Value == settings.context)
+                {
+                    installContext.SelectedValue = settings.context;
+                    selectedContext = true;
+                    break;
+                }
+            }
 
             if (!selectedArch) architecture.SelectedValue = archOptions.Last().Value;
             if (!selectedRenderer) renderer.SelectedValue = rendererOptions.Last().Value;
+            if (!selectedContext) renderer.SelectedValue = contextOptions.First().Value;
 
             architecture.SelectionChanged += (s, e) =>
             {
@@ -161,6 +181,13 @@ namespace launcher
             {
                 settings.renderer = rendererOptions[renderer.SelectedIndex].Value;
                 SaveSettings();
+            };
+
+            installContext.SelectionChanged += (s, e) =>
+            {
+                settings.context = contextOptions[installContext.SelectedIndex].Value;
+                SaveSettings();
+                Initialize(Environment.GetCommandLineArgs());
             };
 
             string[] possibleFolders =
@@ -220,12 +247,25 @@ namespace launcher
             globalTimer.Interval = new TimeSpan(0, 0, 30);
             globalTimer.Start();
 
+            instPath.TextChanged += (s, e) =>
+            {
+                validInstallPath = VerifyFolder(instPath.Text);
+                installPath = instPath.Text;
+                UpdateUI();
+            };
+
+            mainButton.Click += (s, e) =>
+            {
+                OnMainButton();
+            };
+
             Initialize(args);
         }
 
         async void Initialize(string[] args)
         {
             updateFiles.Clear();
+            knownMaster = null;
 
             bool forceInstall = false;
 
@@ -268,7 +308,6 @@ namespace launcher
                 Close();
                 return;
             }
-
             
             needsUpdate = CheckFiles(".\\");
             installed = File.Exists(updateFiles[0].path);
@@ -278,22 +317,11 @@ namespace launcher
                 instPath.Text = installPath;
             }
             mainButton.IsEnabled = true;
+            instProgress.Value = 0;
             instProgress.Visibility = Visibility.Visible;
             instPath.Visibility = Visibility.Hidden;
 
             instPath.PreviewMouseLeftButtonUp += OnPromptFolder;
-
-            instPath.TextChanged += (s, e) =>
-            {
-                validInstallPath = VerifyFolder(instPath.Text);
-                installPath = instPath.Text;
-                UpdateUI();
-            };
-
-            mainButton.Click += (s, e) =>
-            {
-                OnMainButton();
-            };
 
             UpdateUI();
             loadingGrid.Visibility = Visibility.Hidden;
@@ -309,7 +337,7 @@ namespace launcher
         {
             try
             {
-                string response = await util.GET(ToEndpoint(master) + "/api/mirror?xml&latest=1");
+                string response = await util.GET(ToEndpoint(master) + "/api/mirror?context=" + installContext.SelectedValue);
                 return DeserializeXml<MirrorResponse>(response);
             }
             catch (Exception)
@@ -405,11 +433,13 @@ namespace launcher
                         MessageBox.Show("Failed to strip rights for Game folder", "Installer error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
+                installContext.IsEnabled = false;
                 var updateResult = await UpdateFiles(installPath, (double progress) =>
                 {
                     instProgress.Value = (int)(100.0 * progress);
                     return true;
                 }, !installed && createShortcut);
+                installContext.IsEnabled = true;
                 if (updateResult)
                 {
                     needsUpdate = false;
